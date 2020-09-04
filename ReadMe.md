@@ -1,4 +1,4 @@
-# Cube House
+# Téo Me Lab
 
 Seja bem vindo à nossa trilha de Data Science na nuvem! Vamos aprender a usar tecnlogias do mercado de trabalho nesta nova jornada! Espero que se divirta e aprenda conosco.
 
