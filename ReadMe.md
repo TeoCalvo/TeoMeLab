@@ -24,7 +24,7 @@ Garanto com que certa dose de força de vontade e ânimo, qualquer pessoa poder�
 
 ## É Sub na Twitch?
 
-Caso você seja um inscrito **3+ meses** em nosso canal da [Twitch](https://www.twitch.tv/teomewhy), poderá usufruir deste ambiente. Basta enviar um susurro pela Twitch com seu email pessoal. Deixamos claro que isso não é uma compra, mas sim um benefício para engajamento de nossos seguidores.
+Caso você seja um inscrito **3+ meses** em nosso canal da [Twitch](https://www.twitch.tv/teomewhy), poderá usufruir deste ambiente. Basta enviar um susurro pela Twitch com seu email pessoal. Deixamos claro que isso não é uma compra, mas sim um reconhecimento pelo engajamento de nossos seguidores e apoiadores.
 
 ## Cronograma
 
