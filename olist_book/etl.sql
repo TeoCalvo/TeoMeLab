@@ -1,17 +1,17 @@
 with tb_venda as ( -- View para pegar transações menores do que nossa data de referencia
   select *
   from olist.tb_orders as t1
-  where t1.order_approved_at < '2017-04-01'
+  where t1.order_approved_at < '{dt_ref}'
   and t1.order_status = 'delivered'
 ),
 
 tb_seller_vida as ( -- view para pegar informações da vida do seller antes da data de referencia
 
   select t2.seller_id,
-         min(t1.order_approved_at) as seller_prim_venda, -- data da primeira venda no Olist
-         sum(t2.price) as seller_receita_vida, -- receita total da vida no Olist
-         count( distinct t2.order_id) as seller_qt_pedidos_vida, -- qtde de pedidos na vida no Olist
-         count( distinct t2.product_id ) as seller_qt_item_dist_vida -- quantidade de itens distintos vendidos pelo Olist
+          min(t1.order_approved_at) as seller_prim_venda, -- data da primeira venda no Olist
+          sum(t2.price) as seller_receita_vida, -- receita total da vida no Olist
+          count( distinct t2.order_id) as seller_qt_pedidos_vida, -- qtde de pedidos na vida no Olist
+          count( distinct t2.product_id ) as seller_qt_item_dist_vida -- quantidade de itens distintos vendidos pelo Olist
 
   from tb_venda as t1 -- tabela de vendas com os dados até a data de referencia
 
@@ -24,16 +24,16 @@ tb_seller_vida as ( -- view para pegar informações da vida do seller antes da 
 tb_seller_ciclo as (
 
   select t2.seller_id,
-         sum(t2.price) as seller_receita_ciclo, -- receita de venda no olist no ciclo de 3 meses
-         count(distinct t1.order_id) as sellet_qt_pedidos_ciclo, -- qtde de pedidos realizados no cilo
-         sum(t2.price) / count(distinct t1.order_id) as seller_ticket_medio_ciclo, -- ticket médio no ciclo
-         count(*) as seller_qt_item_ciclo, -- qtde de itens vendidos no ciclo 
-         count( distinct t2.product_id ) as seller_qt_item_dist_ciclo, -- qtde de itens distintos vendidos no ciclo
-         min(datediff('2017-04-01',order_approved_at)) as seller_recencia_ciclo, -- quantidade de dia desde a ultima venda
-         
-         avg( datediff( order_delivered_customer_date, order_approved_at ) ) as seller_tempo_medio_entrega, -- média de tempo para entrega
-         count(distinct month(order_approved_at)) as seller_qt_meses_ativacao_ciclo, -- quantidade de meses que houve venda
-         count(distinct date(order_approved_at)) as seller_qt_dias_ativacao_ciclo, -- qnde de dias que houve venda
+          sum(t2.price) as seller_receita_ciclo, -- receita de venda no olist no ciclo de 3 meses
+          count(distinct t1.order_id) as sellet_qt_pedidos_ciclo, -- qtde de pedidos realizados no cilo
+          sum(t2.price) / count(distinct t1.order_id) as seller_ticket_medio_ciclo, -- ticket médio no ciclo
+          count(*) as seller_qt_item_ciclo, -- qtde de itens vendidos no ciclo 
+          count( distinct t2.product_id ) as seller_qt_item_dist_ciclo, -- qtde de itens distintos vendidos no ciclo
+          min(datediff('{dt_ref}',order_approved_at)) as seller_recencia_ciclo, -- quantidade de dia desde a ultima venda
+
+          avg( datediff( order_delivered_customer_date, order_approved_at ) ) as seller_tempo_medio_entrega, -- média de tempo para entrega
+          count(distinct month(order_approved_at)) as seller_qt_meses_ativacao_ciclo, -- quantidade de meses que houve venda
+          count(distinct date(order_approved_at)) as seller_qt_dias_ativacao_ciclo, -- qnde de dias que houve venda
 
           /* Quebra de vendas por estado */
           count( case when T3.customer_state = 'AC' then t1.order_id else null end ) as seller_qt_venda_AC,
@@ -63,10 +63,10 @@ tb_seller_ciclo as (
           count( case when T3.customer_state = 'SE' then t1.order_id else null end ) as seller_qt_venda_SE,
           count( case when T3.customer_state = 'SP' then t1.order_id else null end ) as seller_qt_venda_SP,
           count( case when T3.customer_state = 'TO' then t1.order_id else null end ) as seller_qt_venda_TO,
-          
+
           /* quebra de valor de venda por categoria de produto */
           sum( case when t4.product_category_name in ('agro_industria_e_comercio') then t2.price else 0 end ) as seller_vl_agro_industria_e_comercio_ciclo,
-          sum( case when t4.product_category_name in ('alimentos', 'alimentos_bebidas', 'bebidas') then t2.price else 0 end ) as seller_vl_alimentos_ciclo,
+          sum( case when t4.product_category_name in ('alimentos', 'alimentos_bebidas', 'bebidas') then t2.price else 0 end ) as seller_vl_alimentos_bebidas_ciclo,
           sum( case when t4.product_category_name in ('artes', 'artes_e_artesanato') then t2.price else 0 end ) as seller_vl_artes_ciclo,
           sum( case when t4.product_category_name in ('artigos_de_festas', 'artigos_de_natal') then t2.price else 0 end ) as seller_vl_artigos_de_festas_ciclo,
           sum( case when t4.product_category_name in ('audio') then t2.price else 0 end ) as seller_vl_audio_ciclo,
@@ -106,44 +106,43 @@ tb_seller_ciclo as (
           sum( case when t4.product_category_name in ('sinalizacao_e_seguranca') then t2.price else 0 end ) as seller_vl_sinalizacao_e_seguranca_ciclo,
           sum( case when t4.product_category_name in ('telefonia', 'telefonia_fixa') then t2.price else 0 end ) as seller_vl_telefonia_ciclo,
           sum( case when t4.product_category_name in ('utilidades_domesticas') then t2.price else 0 end ) as seller_vl_utilidades_domesticas_ciclo,
-          
+
           /* quebra de valor de meiod e pagemento */
           sum( case when payment_type = 'boleto' then t2.price else 0 end)  as seller_valor_pgmt_boleto_ciclo,
           sum( case when payment_type = 'credit_card' then t2.price else 0 end)  as seller_valor_pgmt_credit_card_ciclo,
           sum( case when payment_type = 'debit_card' then t2.price else 0 end)  as seller_valor_pgmt_debit_card_ciclo,
           sum( case when payment_type = 'not_defined' then t2.price else 0 end)  as seller_valor_pgmt_not_defined_ciclo,
           sum( case when payment_type = 'voucher' then t2.price else 0 end)  as seller_valor_pgmt_voucher_ciclo
-          
+
   from tb_venda as t1 -- tabela de venda 
 
   left join olist.tb_order_items as t2 -- tabela de item/pedido
   on t1.order_id = t2.order_id
-  
+
   left join olist.tb_customers as t3 -- tabela de consumidores
   on t1.customer_id = t3.customer_id
-  
+
   left join olist.tb_products as t4 -- tabela de procutos
   on t2.product_id = t4.product_id
-  
+
   left join olist.tb_order_payments as t5 -- tabela de meio de pagamento
   on t1.order_id = t5.order_id
 
-  where t1.order_approved_at >= '2017-01-01'
+  where t1.order_approved_at >= add_months('{dt_ref}', -3)
   group by t2.seller_id
 
 )
 
-select  '2017-04-01' as dt_ref,
+{insert_into}
+select  '{dt_ref}' as dt_ref,
         t1.*,
+        t1.seller_qt_dias_ativacao_ciclo / least( datediff('{dt_ref}', t2.seller_prim_venda), datediff('{dt_ref}', add_months('{dt_ref}', -3)) ) as seller_tx_ativacao_ciclo,
         t2.seller_receita_vida,
-        datediff('2017-04-01', t2.seller_prim_venda) as seller_idade_base,
+        datediff('{dt_ref}', t2.seller_prim_venda) as seller_idade_base,
         t2.seller_qt_pedidos_vida,
         t2.seller_qt_item_dist_vida
 
 from tb_seller_ciclo as t1
 
 left join tb_seller_vida as t2
-on t1.seller_id = t2.seller_id
-
--- Próximos passos:
--- taxa de ativação dia/mes
+on t1.seller_id = t2.seller_id;
