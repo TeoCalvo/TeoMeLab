@@ -134,7 +134,11 @@ tb_seller_ciclo as (
 )
 
 {insert_into}
-select  '{dt_ref}' as dt_ref,
+select  
+        year('{dt_ref}') as nr_partition_year,
+        month('{dt_ref}') as nr_partition_month,
+        day('{dt_ref}') as nr_partition_day,
+        '{dt_ref}' as dt_ref,
         t1.*,
         t1.seller_qt_dias_ativacao_ciclo / least( datediff('{dt_ref}', t2.seller_prim_venda), datediff('{dt_ref}', add_months('{dt_ref}', -3)) ) as seller_tx_ativacao_ciclo,
         t2.seller_receita_vida,
