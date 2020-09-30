@@ -21,5 +21,4 @@ spark = SparkSession.builder.getOrCreate()
 print("ok.")
 
 for q in tqdm(query.split(";")[:-1]):
-    time.sleep(2)
-    #spark.sql(q)
+    spark.sql(q)
