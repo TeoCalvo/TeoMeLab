@@ -31,11 +31,6 @@ all_columns = list(set( all_columns ) - set(to_remove))
 # Checando variáveis numerias e categóricas
 df[all_columns].dtypes[ df[all_columns].dtypes == 'object']
 
-df[all_columns].describe().T
-
-profile = ProfileReport(df[all_columns + [target]].copy(), title="Pandas Profiling Report")
-profile.to_file("your_report.html", minimal=True)
-
 X_train, X_test, y_train, y_test = model_selection.train_test_split(df[all_columns],
                                                                     df[target],
                                                                     test_size=0.15,
@@ -62,8 +57,6 @@ model = lgb.LGBMClassifier(n_jobs=-1,
 
 model.fit(X_train, y_train) # Foi treinado esse carai!!
 
-X_train.columns.tolist()
-
 y_pred_train = model.predict_proba(X_train)
 auc_train = metrics.roc_auc_score(y_train, y_pred_train[:,1])
 print("Curva roc com base de treino:", auc_train)
@@ -75,6 +68,7 @@ y_pred_test = model.predict_proba(X_test)
 auc_test = metrics.roc_auc_score(y_test, y_pred_test[:,1])
 print("Curva roc com base de test:", auc_test)
 
+# Sessao de testes do modelo para apresentação...
 skplt.metrics.plot_roc(y_test, y_pred_test)
 plt.show()
 
@@ -85,14 +79,13 @@ skplt.metrics.plot_ks_statistic(y_test, y_pred_test)
 plt.show()
 
 y_test_pred_new = y_pred_test[:,1] > 0.3
-
 metrics.precision_score( y_test, y_test_pred_new )
 
-
+# Salvando o modelo de machine learning!
 model_pkl = pd.Series( {"model": model,
                         "fit_vars": X_train.columns.tolist(),
                         "auc": {"test":auc_test,
                                 "train":auc_train}
                         } )
 
-model_pkl.to_pickle( os.path.join(MODELS_DIR,'model_churn.pkl') )
+model_pkl.to_pickle(os.path.join(MODELS_DIR,'model_churn.pkl'))
