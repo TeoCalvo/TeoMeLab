@@ -37,5 +37,5 @@ Caso você seja um inscrito **3+ meses** em nosso canal da [Twitch](https://www.
 |5| 22/09 | Criação da ABT - Parte I |
 |6| 24/09 | Criação da ABT - Parte II |
 |7| 29/09 | Treinando algoritmos de Classificação |
-|8| 01/10 | Comparando diversos modelos |
-|9| 06/10 | Deploy |
+|8| 01/10 | Deploy |
+|9| 06/10 | Dúvidas e Sugestões de próximos passos |
